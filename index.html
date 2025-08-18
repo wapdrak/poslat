@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="cs" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>&#128488; Univerzální odesílač zpráv</title>
+    
+    <!-- Tailwind CSS Framework -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- intl-tel-input CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/css/intlTelInput.css" />
+    
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" xintegrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://gimo.co.il/url/img/whatsapp-lilach2.png">
+
+    <style>
+        /* Minimal custom styles */
+        html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; }
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background-image: url("https://gimo.co.il/url/img/bwhatsapp.jpg");
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+        .border-groove { border-style: groove; }
+        
+        /* Styling for intl-tel-input to match the theme */
+        .iti { width: 100%; direction: ltr; }
+        .iti__country-list { background-color: #1f2937; border-color: #4b5563; }
+        .iti__country { color: #d1d5db; }
+        .iti__country:hover { background-color: #374151; }
+        .iti__dial-code { color: #9ca3af; }
+
+        /* Custom validation styles */
+        .validace .is-invalid + span#span:after {
+            content: "✘"; color: red; font-size: 1.5rem; vertical-align: middle; margin-left: 5px;
+        }
+        .validace .is-valid + span#span:after {
+            content: "✔"; color: limegreen; font-size: 1.5rem; vertical-align: middle; margin-left: 5px;
+        }
+        #phone.is-invalid { border-color: red !important; }
+        #phone.is-valid { border-color: limegreen !important; }
+
+        /* Fix pro mobilní zoom a responzivní písmo */
+        #phone, #username {
+            font-size: 16px; /* Základní velikost pro mobil, aby se zabránilo zoomu */
+        }
+        @media (min-width: 640px) {
+            #phone, #username { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 flex items-center justify-center p-1 sm:p-2">
+
+    <!-- FIX: Removed redundant x-init. Alpine's init() is called automatically when using Alpine.data -->
+    <main class="w-full max-w-2xl" x-data="contactForm">
+        <div class="text-center border-4 border-groove border-black rounded-3xl p-4 sm:p-6 bg-black bg-opacity-70 text-white">
+            <section>
+                <h1 class="text-2xl sm:text-4xl font-bold">
+                    <i class="fab fa-whatsapp" style="color:limegreen;"></i>
+                    <i class="fab fa-viber" style="color:#7360F2;"></i>
+                    <i class="fab fa-telegram-plane" style="color:#2AABEE;"></i>
+                    Odesílač zpráv
+                </h1>
+                <h2 class="text-base sm:text-lg text-gray-300 mt-2">
+                    Odešlete zprávu na jakékoliv číslo nebo jméno bez ukládání do kontaktů.
+                </h2>
+
+                <form id="contact-form" class="m-1 validace" @submit.prevent>
+                    
+                    <textarea name="t" id="text" x-model="message" class="bg-black text-white placeholder-white rounded-2xl m-0.5 p-1 border-4 w-full max-w-md mx-auto mt-4" rows="4" placeholder="   Text zprávy..." title="Text zprávy (pro WhatsApp, Telegram, SMS)" style="font-size:100%;"></textarea>
+
+                    <!-- Sekce pro telefonní číslo -->
+                    <div class="my-4">
+                        <div class="flex flex-wrap justify-center items-center gap-2">
+                            <input id="phone" type="tel" @input="validateNumber" placeholder="Telefonní číslo..." class="flex-grow bg-black text-yellow rounded-md border-4 border-gray-500 m-0.5 p-2 text-left w-full">
+                            <span id="span"></span>
+                        </div>
+                        <div class="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            <button type="button" @click="handleAction('whatsapp')" class="fab mx-auto text-lime-500 bg-black rounded-lg border-4 p-2 w-full text-lg sm:text-xl" title="Odeslat přes WhatsApp">&nbsp;&#xf232; WhatsApp</button>
+                            <button type="button" @click="handleAction('viber')" class="fab mx-auto bg-black rounded-lg border-4 p-2 w-full text-lg sm:text-xl" style="color:#7360F2;" title="Otevřít ve Viberu">&nbsp;&#xf398; Viber</button>
+                            <button type="button" @click="handleAction('signal')" class="fas mx-auto text-blue-600 bg-black rounded-lg border-4 p-2 w-full text-lg sm:text-xl" title="Otevřít v Signalu">&nbsp;&#xf4d3; Signal</button>
+                            <button type="button" @click="handleAction('sms')" class="far mx-auto text-yellow bg-black rounded-lg border-4 p-2 w-full text-lg sm:text-xl" title="Odeslat jako SMS">&nbsp;&#xf4ad; SMS</button>
+                            <button type="button" @click="handleAction('tel')" class="fas mx-auto text-yellow bg-black rounded-lg border-4 p-2 w-full text-lg sm:text-xl col-span-2 sm:col-span-1" title="Zavolat">&nbsp;&#xf095; Zavolat</button>
+                        </div>
+                    </div>
+
+                    <!-- Oddělovač -->
+                    <div class="my-6 text-xl sm:text-2xl font-bold text-gray-400">
+                        NEBO
+                    </div>
+
+                    <!-- Sekce pro uživatelské jméno -->
+                    <div class="my-4">
+                         <input id="username" type="text" x-model="username" placeholder="Uživatelské jméno..." title="Zadejte uživatelské jméno pro Telegram nebo Messenger" class="bg-black text-yellow rounded-md border-4 border-gray-500 m-0.5 p-2 text-center w-full">
+                        <div class="mt-4 grid grid-cols-2 gap-2">
+                            <button type="button" @click="handleAction('telegram')" class="fab mx-auto text-blue-400 bg-black rounded-lg border-4 p-2 w-full text-lg sm:text-xl" title="Odeslat přes Telegram">&nbsp;&#xf3fe; Telegram</button>
+                            <button type="button" @click="handleAction('messenger')" class="fab mx-auto text-blue-500 bg-black rounded-lg border-4 p-2 w-full text-lg sm:text-xl" title="Odeslat přes Messenger">&nbsp;&#xf39f; Messenger</button>
+                        </div>
+                    </div>
+                                        
+                    <hr class="my-6 border-gray-600">
+
+                    <input type="reset" value="&#xf021; Reset" @click="resetForm" class="fa mx-auto text-white bg-black rounded-lg border-4 p-2 cursor-pointer w-full text-xl sm:text-3xl" title="Resetovat formulář" />
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <!-- intl-tel-input JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput.min.js"></script>
+    
+    <!-- FIX: The script that defines the Alpine component now comes BEFORE the Alpine library is loaded -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('contactForm', () => ({
+                phoneInput: null, message: '', username: '', phoneEl: null,
+                init() {
+                    this.phoneEl = document.querySelector("#phone");
+                    this.phoneInput = window.intlTelInput(this.phoneEl, {
+                        geoIpLookup: (callback) => {
+                            fetch("https://ipinfo.io/json")
+                                .then(response => response.json())
+                                .then(json => callback(json.country || "cz"))
+                                .catch(() => callback("cz"));
+                        },
+                        separateDialCode: true,
+                        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js",
+                    });
+                    this.validateNumber(); 
+                },
+                validateNumber() {
+                    this.phoneEl.classList.remove('is-valid', 'is-invalid');
+                    if (this.phoneEl.value.trim()) {
+                        if (this.phoneInput.isValidNumber()) this.phoneEl.classList.add('is-valid');
+                        else this.phoneEl.classList.add('is-invalid');
+                    }
+                },
+                handleAction(type) {
+                    const encodedMessage = encodeURIComponent(this.message.trim());
+                    let url = '';
+                    switch(type) {
+                        case 'whatsapp': case 'sms': case 'tel': case 'signal': case 'viber':
+                            if (this.phoneInput.isValidNumber()) {
+                                const fullNumber = this.phoneInput.getNumber();
+                                if (type === 'whatsapp') url = `https://api.whatsapp.com/send?phone=${fullNumber.substring(1)}&text=${encodedMessage}`;
+                                if (type === 'sms') url = `sms:${fullNumber}?body=${encodedMessage}`;
+                                if (type === 'tel') url = `tel:${fullNumber}`;
+                                if (type === 'signal') url = `signal://send?recipient=${fullNumber.substring(1)}`;
+                                if (type === 'viber') url = `viber://chat?number=${fullNumber.substring(1)}`;
+                            } else {
+                                this.phoneEl.classList.add('is-invalid'); this.phoneEl.focus();
+                            }
+                            break;
+                        case 'telegram': case 'messenger':
+                            if (this.username.trim()) {
+                                const cleanUsername = this.username.trim();
+                                if (type === 'telegram') url = `https://t.me/${cleanUsername}?text=${encodedMessage}`;
+                                if (type === 'messenger') url = `https://m.me/${cleanUsername}`;
+                            } else {
+                                document.querySelector("#username").focus();
+                            }
+                            break;
+                    }
+                    if(url) window.open(url, '_blank');
+                },
+                resetForm() {
+                    this.phoneInput.setNumber(''); this.message = ''; this.username = '';
+                    this.phoneEl.classList.remove('is-valid', 'is-invalid');
+                }
+            }));
+        });
+    </script>
+    
+    <!-- Alpine.js Framework - loaded with defer to run after the DOM is ready and our function is defined -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>
+
