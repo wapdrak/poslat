@@ -8,8 +8,8 @@
     <!-- Tailwind CSS Framework -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- intl-tel-input CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/css/intlTelInput.css" />
+    <!-- Latest intl-tel-input CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/20.3.0/css/intlTelInput.css" />
     
     <!-- Google Fonts & Font Awesome Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -37,6 +37,11 @@
         .iti__country { color: #d1d5db; }
         .iti__country:hover { background-color: #374151; }
         .iti__dial-code { color: #9ca3af; }
+        .iti__search-input {
+            background-color: #374151;
+            color: #d1d5db;
+            border-color: #4b5563;
+        }
 
         /* Custom validation styles */
         .validace .is-invalid + span#span:after {
@@ -50,7 +55,7 @@
 
         /* Fix pro mobilní zoom a responzivní písmo */
         #phone, #username {
-            font-size: 16px; /* Základní velikost pro mobil, aby se zabránilo zoomu */
+            font-size: 16px;
         }
         @media (min-width: 640px) {
             #phone, #username { font-size: 1.5rem; }
@@ -114,8 +119,8 @@
         </div>
     </main>
 
-    <!-- intl-tel-input JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput.min.js"></script>
+    <!-- Latest intl-tel-input JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/20.3.0/js/intlTelInput.min.js"></script>
     
     <!-- FIX: The script that defines the Alpine component now comes BEFORE the Alpine library is loaded -->
     <script>
@@ -125,14 +130,10 @@
                 init() {
                     this.phoneEl = document.querySelector("#phone");
                     this.phoneInput = window.intlTelInput(this.phoneEl, {
-                        geoIpLookup: (callback) => {
-                            fetch("https://ipinfo.io/json")
-                                .then(response => response.json())
-                                .then(json => callback(json.country || "cz"))
-                                .catch(() => callback("cz"));
-                        },
+                        initialCountry: "cz",
+                        showSearchBox: true,
                         separateDialCode: true,
-                        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js",
+                        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/20.3.0/js/utils.js",
                     });
                     this.validateNumber(); 
                 },
@@ -183,6 +184,7 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>
+
 
 
 
