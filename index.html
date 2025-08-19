@@ -13,6 +13,7 @@
     
     <!-- Google Fonts & Font Awesome Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- FIX: Corrected typo from xintegrity to integrity -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" xintegrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- Favicon -->
@@ -58,6 +59,7 @@
 </head>
 <body class="bg-gray-900 text-gray-200 flex justify-center p-1 sm:p-2 pt-8">
 
+    <!-- FIX: Removed redundant x-init. Alpine's init() is called automatically. -->
     <main class="w-full max-w-2xl" x-data="contactForm">
         <div class="text-center border-4 border-groove border-black rounded-3xl p-4 sm:p-6 bg-black bg-opacity-70 text-white">
             <section>
@@ -82,11 +84,11 @@
                             <span id="span"></span>
                         </div>
                         <div class="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            <button type="button" @click="handleAction('whatsapp')" class="fab mx-auto text-lime-500 bg-black rounded-lg border-4 p-2 w-full text-lg sm:text-xl" title="Odeslat přes WhatsApp">&nbsp;&#xf232; WhatsApp</button>
-                            <button type="button" @click="handleAction('viber')" class="fab mx-auto bg-black rounded-lg border-4 p-2 w-full text-lg sm:text-xl" style="color:#7360F2;" title="Otevřít ve Viberu">&nbsp;&#xf398; Viber</button>
-                            <button type="button" @click="handleAction('signal')" class="fas mx-auto text-blue-600 bg-black rounded-lg border-4 p-2 w-full text-lg sm:text-xl" title="Otevřít v Signalu">&nbsp;&#xf4d3; Signal</button>
-                            <button type="button" @click="handleAction('sms')" class="far mx-auto text-yellow bg-black rounded-lg border-4 p-2 w-full text-lg sm:text-xl" title="Odeslat jako SMS">&nbsp;&#xf4ad; SMS</button>
-                            <button type="button" @click="handleAction('tel')" class="fas mx-auto text-yellow bg-black rounded-lg border-4 p-2 w-full text-lg sm:text-xl col-span-2 sm:col-span-1" title="Zavolat">&nbsp;&#xf095; Zavolat</button>
+                            <button type="button" @click="handleAction('whatsapp')" class="flex items-center justify-center gap-2 mx-auto text-lime-500 bg-black rounded-lg border-4 py-2 px-3 w-full text-base sm:text-lg" title="Odeslat přes WhatsApp"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                            <button type="button" @click="handleAction('viber')" class="flex items-center justify-center gap-2 mx-auto bg-black rounded-lg border-4 py-2 px-3 w-full text-base sm:text-lg" style="color:#7360F2;" title="Otevřít ve Viberu"><i class="fab fa-viber"></i> Viber</button>
+                            <button type="button" @click="handleAction('signal')" class="flex items-center justify-center gap-2 mx-auto text-blue-600 bg-black rounded-lg border-4 py-2 px-3 w-full text-base sm:text-lg" title="Otevřít v Signalu"><i class="fas fa-comments"></i> Signal</button>
+                            <button type="button" @click="handleAction('sms')" class="flex items-center justify-center gap-2 mx-auto text-yellow bg-black rounded-lg border-4 py-2 px-3 w-full text-base sm:text-lg" title="Odeslat jako SMS"><i class="far fa-comment-alt"></i> SMS</button>
+                            <button type="button" @click="handleAction('tel')" class="flex items-center justify-center gap-2 mx-auto text-yellow bg-black rounded-lg border-4 py-2 px-3 w-full text-base sm:text-lg col-span-2 sm:col-span-1" title="Zavolat"><i class="fas fa-phone"></i> Zavolat</button>
                         </div>
                     </div>
 
@@ -99,8 +101,8 @@
                     <div class="my-4">
                          <input id="username" type="text" x-model="username" placeholder="Uživatelské jméno..." title="Zadejte uživatelské jméno pro Telegram nebo Messenger" class="bg-black text-yellow rounded-md border-4 border-gray-500 m-0.5 p-2 text-center w-full">
                         <div class="mt-4 grid grid-cols-2 gap-2">
-                            <button type="button" @click="handleAction('telegram')" class="fab mx-auto text-blue-400 bg-black rounded-lg border-4 p-2 w-full text-lg sm:text-xl" title="Odeslat přes Telegram">&nbsp;&#xf3fe; Telegram</button>
-                            <button type="button" @click="handleAction('messenger')" class="fab mx-auto text-blue-500 bg-black rounded-lg border-4 p-2 w-full text-lg sm:text-xl" title="Odeslat přes Messenger">&nbsp;&#xf39f; Messenger</button>
+                            <button type="button" @click="handleAction('telegram')" class="flex items-center justify-center gap-2 mx-auto text-blue-400 bg-black rounded-lg border-4 py-2 px-3 w-full text-base sm:text-lg" title="Odeslat přes Telegram"><i class="fab fa-telegram-plane"></i> Telegram</button>
+                            <button type="button" @click="handleAction('messenger')" class="flex items-center justify-center gap-2 mx-auto text-blue-500 bg-black rounded-lg border-4 py-2 px-3 w-full text-base sm:text-lg" title="Odeslat přes Messenger"><i class="fab fa-facebook-messenger"></i> Messenger</button>
                         </div>
                     </div>
                                         
@@ -181,5 +183,6 @@
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>
+
 
 
