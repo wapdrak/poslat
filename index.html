@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+[⚠️ Suspicious Content] <!DOCTYPE html>
 <html lang="cs" dir="ltr">
 <head>
     <meta charset="UTF-8">
@@ -13,7 +13,6 @@
     
     <!-- Google Fonts & Font Awesome Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- FIX: Corrected typo from xintegrity to integrity -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" xintegrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- Favicon -->
@@ -31,9 +30,27 @@
         }
         .border-groove { border-style: groove; }
         
-        /* Styling for intl-tel-input to match the theme */
-        .iti { width: 100%; direction: ltr; }
-        .iti__country-list { background-color: #1f2937; border-color: #4b5563; }
+        .iti {
+            direction: ltr;
+        }
+        #phone {
+            text-align: left;
+        }
+        
+        .iti__country-list {
+            left: 0 !important;
+            right: auto !important;
+            direction: ltr;
+        }
+        .iti__country, .iti__search-input {
+            direction: ltr;
+            text-align: left;
+        }
+        
+        .iti__country-list { 
+            background-color: #1f2937; 
+            border-color: #4b5563; 
+        }
         .iti__country { color: #d1d5db; }
         .iti__country:hover { background-color: #374151; }
         .iti__dial-code { color: #9ca3af; }
@@ -42,18 +59,23 @@
             color: #d1d5db;
             border-color: #4b5563;
         }
-
-        /* Custom validation styles */
-        .validace .is-invalid + span#span:after {
-            content: "✘"; color: red; font-size: 1.5rem; vertical-align: middle; margin-left: 5px;
+        
+        .iti--invalid .iti__tel-input {
+            border-color: red !important;
         }
-        .validace .is-valid + span#span:after {
-            content: "✔"; color: limegreen; font-size: 1.5rem; vertical-align: middle; margin-left: 5px;
+        .iti--valid .iti__tel-input {
+            border-color: limegreen !important;
         }
-        #phone.is-invalid { border-color: red !important; }
-        #phone.is-valid { border-color: limegreen !important; }
+        .validation-icon-container {
+            direction: ltr; /* Changed to LTR to keep icon on the left */
+        }
+        .validation-icon-container.invalid:after {
+            content: "✘"; color: red; font-size: 1.5rem; vertical-align: middle; margin-right: 5px;
+        }
+        .validation-icon-container.valid:after {
+            content: "✔"; color: limegreen; font-size: 1.5rem; vertical-align: middle; margin-right: 5px;
+        }
 
-        /* Fix pro mobilní zoom a responzivní písmo */
         #phone, #username {
             font-size: 16px;
         }
@@ -64,30 +86,36 @@
 </head>
 <body class="bg-gray-900 text-gray-200 flex justify-center p-1 sm:p-2 pt-8">
 
-    <!-- FIX: Removed redundant x-init. Alpine's init() is called automatically. -->
-    <main class="w-full max-w-2xl" x-data="contactForm">
+    <main class="w-full max-w-2xl" x-data="contactForm" x-init="init()">
         <div class="text-center border-4 border-groove border-black rounded-3xl p-4 sm:p-6 bg-black bg-opacity-70 text-white">
             <section>
                 <h1 class="text-2xl sm:text-4xl font-bold">
                     <i class="fab fa-whatsapp" style="color:limegreen;"></i>
                     <i class="fab fa-viber" style="color:#7360F2;"></i>
                     <i class="fab fa-telegram-plane" style="color:#2AABEE;"></i>
-                    Odesílač zpráv
+                    Univerzální odesílač
                 </h1>
                 <h2 class="text-base sm:text-lg text-gray-300 mt-2">
-                    Odešlete zprávu na jakékoliv číslo nebo jméno bez ukládání do kontaktů.
+                    Pošlete zprávu na jakékoliv číslo nebo jméno bez uložení kontaktu.
                 </h2>
 
-                <form id="contact-form" class="m-1 validace" @submit.prevent>
+                <form id="contact-form" class="m-1" @submit.prevent>
                     
-                    <textarea name="t" id="text" x-model="message" class="bg-black text-white placeholder-white rounded-2xl m-0.5 p-1 border-4 w-full max-w-md mx-auto mt-4" rows="4" placeholder="   Text zprávy..." title="Text zprávy (pro WhatsApp, Telegram, SMS)" style="font-size:100%;"></textarea>
+                    <textarea name="t" id="text" x-model="message" class="bg-black text-white placeholder-white rounded-2xl m-0.5 p-1 border-4 w-full max-w-md mx-auto mt-4" rows="4" placeholder="Obsah zprávy..." title="Obsah zprávy (pro WhatsApp, Telegram, SMS)" style="font-size:100%;"></textarea>
 
-                    <!-- Sekce pro telefonní číslo -->
+                    <!-- Phone Number Section -->
                     <div class="my-4">
-                        <div class="flex flex-wrap justify-center items-center gap-2">
-                            <input id="phone" type="tel" @input="validateNumber" placeholder="Telefonní číslo..." class="flex-grow bg-black text-yellow rounded-md border-4 border-gray-500 m-0.5 p-2 text-left w-full">
-                            <span id="span"></span>
+                        <div class="flex items-center gap-2">
+                             <span id="validation-icon" class="validation-icon-container"></span>
+                            <div class="flex-grow">
+                                <input id="phone" type="tel" @input="validateNumber" placeholder="Telefonní číslo" class="bg-black text-yellow rounded-md border-4 border-gray-500 m-0.5 p-2 w-full">
+                            </div>
                         </div>
+                        
+                        <button type="button" @click="selectContact()" x-show="contactPickerSupported" class="flex items-center justify-center gap-2 mx-auto text-white bg-gray-700 rounded-lg border-4 py-2 px-3 w-full text-base sm:text-lg mt-2" title="Vybrat z kontaktů"><i class="fas fa-address-book"></i> Vybrat z kontaktů</button>
+                        
+                        <div x-show="contactApiError" x-text="contactApiError" class="text-red-500 bg-black bg-opacity-70 rounded-lg p-2 mt-2 text-sm" x-transition></div>
+
                         <div class="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
                             <button type="button" @click="handleAction('whatsapp')" class="flex items-center justify-center gap-2 mx-auto text-lime-500 bg-black rounded-lg border-4 py-2 px-3 w-full text-base sm:text-lg" title="Odeslat přes WhatsApp"><i class="fab fa-whatsapp"></i> WhatsApp</button>
                             <button type="button" @click="handleAction('viber')" class="flex items-center justify-center gap-2 mx-auto bg-black rounded-lg border-4 py-2 px-3 w-full text-base sm:text-lg" style="color:#7360F2;" title="Otevřít ve Viberu"><i class="fab fa-viber"></i> Viber</button>
@@ -97,14 +125,14 @@
                         </div>
                     </div>
 
-                    <!-- Oddělovač -->
+                    <!-- Separator -->
                     <div class="my-6 text-xl sm:text-2xl font-bold text-gray-400">
-                        NEBO
+                        Nebo
                     </div>
 
-                    <!-- Sekce pro uživatelské jméno -->
+                    <!-- Username Section -->
                     <div class="my-4">
-                         <input id="username" type="text" x-model="username" placeholder="Uživatelské jméno..." title="Zadejte uživatelské jméno pro Telegram nebo Messenger" class="bg-black text-yellow rounded-md border-4 border-gray-500 m-0.5 p-2 text-center w-full">
+                         <input id="username" type="text" x-model="username" placeholder="Uživatelské jméno..." title="Zadejte jméno pro Telegram nebo Messenger" class="bg-black text-yellow rounded-md border-4 border-gray-500 m-0.5 p-2 text-center w-full">
                         <div class="mt-4 grid grid-cols-2 gap-2">
                             <button type="button" @click="handleAction('telegram')" class="flex items-center justify-center gap-2 mx-auto text-blue-400 bg-black rounded-lg border-4 py-2 px-3 w-full text-base sm:text-lg" title="Odeslat přes Telegram"><i class="fab fa-telegram-plane"></i> Telegram</button>
                             <button type="button" @click="handleAction('messenger')" class="flex items-center justify-center gap-2 mx-auto text-blue-500 bg-black rounded-lg border-4 py-2 px-3 w-full text-base sm:text-lg" title="Odeslat přes Messenger"><i class="fab fa-facebook-messenger"></i> Messenger</button>
@@ -113,7 +141,7 @@
                                         
                     <hr class="my-6 border-gray-600">
 
-                    <input type="reset" value="&#xf021; Reset" @click="resetForm" class="fa mx-auto text-white bg-black rounded-lg border-4 p-2 cursor-pointer w-full text-xl sm:text-3xl" title="Resetovat formulář" />
+                    <input type="reset" value="&#xf021; Resetovat" @click="resetForm" class="fa mx-auto text-white bg-black rounded-lg border-4 p-2 cursor-pointer w-full text-xl sm:text-3xl" title="Resetovat formulář" />
                 </form>
             </section>
         </div>
@@ -122,42 +150,119 @@
     <!-- Latest intl-tel-input JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/20.3.0/js/intlTelInput.min.js"></script>
     
-    <!-- FIX: The script that defines the Alpine component now comes BEFORE the Alpine library is loaded -->
+    <!-- Alpine.js Component Definition -->
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('contactForm', () => ({
                 phoneInput: null, message: '', username: '', phoneEl: null,
+                contactPickerSupported: false,
+                contactApiError: '',
+                isUtilsLoaded: false,
                 init() {
                     this.phoneEl = document.querySelector("#phone");
+                    
                     this.phoneInput = window.intlTelInput(this.phoneEl, {
+                        // CHANGED: Default country is now Czech Republic
                         initialCountry: "cz",
                         showSearchBox: true,
                         separateDialCode: true,
                         utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/20.3.0/js/utils.js",
                     });
-                    this.validateNumber(); 
+                    
+                    this.phoneInput.promise.then(() => {
+                        console.log("Utils script loaded successfully. Full validation is now enabled.");
+                        this.isUtilsLoaded = true;
+                        this.phoneEl.addEventListener('countrychange', () => this.validateNumber());
+                        this.validateNumber();
+                    }).catch(error => {
+                        console.error("Error loading utils script:", error);
+                    });
+
+                    if ('contacts' in navigator && 'select' in navigator.contacts) {
+                        this.contactPickerSupported = true;
+                    }
+                },
+                isNumberValid() {
+                    const country = this.phoneInput.getSelectedCountryData().iso2;
+
+                    // --- HYBRID VALIDATION ---
+                    if (country === 'il') {
+                        // Use our battle-tested custom logic for Israel
+                        const number = this.phoneEl.value;
+                        if (!number.trim()) return false;
+                        let sanitizedNumber = number.replace(/\D/g, '');
+
+                        if (sanitizedNumber.startsWith('0')) {
+                            if (sanitizedNumber.startsWith('05')) {
+                                return sanitizedNumber.length === 10;
+                            } else {
+                                return sanitizedNumber.length === 9;
+                            }
+                        } else {
+                            if (sanitizedNumber.length === 9 && (sanitizedNumber.startsWith('5'))) {
+                                return true;
+                            }
+                            if (sanitizedNumber.length === 8 && !(sanitizedNumber.startsWith('5'))) {
+                                return true;
+                            }
+                            return false;
+                        }
+                    } else {
+                        // For all other countries, use the reliable library validation
+                        if (!this.isUtilsLoaded) return false; // Guard clause
+                        return this.phoneInput.isValidNumber();
+                    }
                 },
                 validateNumber() {
-                    this.phoneEl.classList.remove('is-valid', 'is-invalid');
+                    const itiElement = this.phoneInput.a;
+                    const iconElement = document.querySelector("#validation-icon");
+                    
+                    itiElement.classList.remove('iti--valid', 'iti--invalid');
+                    iconElement.classList.remove('valid', 'invalid');
+                    
                     if (this.phoneEl.value.trim()) {
-                        if (this.phoneInput.isValidNumber()) this.phoneEl.classList.add('is-valid');
-                        else this.phoneEl.classList.add('is-invalid');
+                        if (this.isNumberValid()) {
+                            itiElement.classList.add('iti--valid');
+                            iconElement.classList.add('valid');
+                        } else {
+                            itiElement.classList.add('iti--invalid');
+                            iconElement.classList.add('invalid');
+                        }
+                    }
+                },
+                async selectContact() {
+                    this.contactApiError = '';
+                    try {
+                        const contacts = await navigator.contacts.select(['tel'], {multiple: false});
+                        if (contacts.length > 0 && contacts[0].tel.length > 0) {
+                            this.phoneInput.setNumber(contacts[0].tel[0]);
+                            this.validateNumber();
+                        }
+                    } catch (ex) {
+                        console.error("Error selecting contact.", ex);
+                        this.contactApiError = 'Výběr kontaktů není v tomto náhledu podporován.';
+                        setTimeout(() => { this.contactApiError = ''; }, 5000);
                     }
                 },
                 handleAction(type) {
+                    const isNumberGood = this.isNumberValid();
+                    this.validateNumber();
+                    
                     const encodedMessage = encodeURIComponent(this.message.trim());
                     let url = '';
                     switch(type) {
                         case 'whatsapp': case 'sms': case 'tel': case 'signal': case 'viber':
-                            if (this.phoneInput.isValidNumber()) {
+                            if (isNumberGood) {
+                                this.phoneInput.setNumber(this.phoneEl.value);
                                 const fullNumber = this.phoneInput.getNumber();
+                                
                                 if (type === 'whatsapp') url = `https://api.whatsapp.com/send?phone=${fullNumber.substring(1)}&text=${encodedMessage}`;
                                 if (type === 'sms') url = `sms:${fullNumber}?body=${encodedMessage}`;
                                 if (type === 'tel') url = `tel:${fullNumber}`;
                                 if (type === 'signal') url = `signal://send?recipient=${fullNumber.substring(1)}`;
                                 if (type === 'viber') url = `viber://chat?number=${fullNumber.substring(1)}`;
                             } else {
-                                this.phoneEl.classList.add('is-invalid'); this.phoneEl.focus();
+                                this.phoneEl.focus();
                             }
                             break;
                         case 'telegram': case 'messenger':
@@ -173,18 +278,17 @@
                     if(url) window.open(url, '_blank');
                 },
                 resetForm() {
-                    this.phoneInput.setNumber(''); this.message = ''; this.username = '';
-                    this.phoneEl.classList.remove('is-valid', 'is-invalid');
+                    this.phoneInput.setNumber(''); 
+                    this.message = ''; 
+                    this.username = '';
+                    this.validateNumber();
                 }
             }));
         });
     </script>
     
-    <!-- Alpine.js Framework - loaded with defer to run after the DOM is ready and our function is defined -->
+    <!-- Alpine.js Framework - DEFER is critical for correct initialization -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
 </body>
 </html>
-
-
-
-
